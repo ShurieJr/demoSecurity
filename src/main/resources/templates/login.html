@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Spring Security Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+        }
+
+        body {
+            background: linear-gradient(120deg, #f6f9ff, #e9ecef);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .login-container {
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, var(--primary), #2a5bd7);
+            color: white;
+            padding: 2rem 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .login-header h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-body {
+            padding: 2rem;
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary);
+            z-index: 10;
+        }
+
+        .form-control {
+            padding-left: 45px;
+            height: 50px;
+            border-radius: 8px;
+            border: 1px solid #d1d3e2;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--secondary);
+            z-index: 10;
+        }
+
+        .btn-login {
+            background: linear-gradient(to right, var(--primary), #2a5bd7);
+            border: none;
+            height: 50px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(to right, #3c61d9, #1e4bc7);
+            transform: translateY(-2px);
+        }
+
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--secondary);
+        }
+
+        .divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            border-top: 1px solid #e3e6f0;
+            z-index: 1;
+        }
+
+        .divider span {
+            position: relative;
+            background: white;
+            padding: 0 10px;
+            z-index: 2;
+        }
+
+        .social-login .btn {
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-google {
+            background: #fff;
+            border: 1px solid #d1d3e2;
+            color: #4e4e4e;
+        }
+
+        .btn-google:hover {
+            background: #f8f9fc;
+        }
+
+        .btn-facebook {
+            background: #3b5998;
+            color: white;
+        }
+
+        .btn-facebook:hover {
+            background: #344e86;
+        }
+
+        .login-footer {
+            padding: 1.5rem;
+            background: #f8f9fc;
+            text-align: center;
+            border-top: 1px solid #e3e6f0;
+        }
+
+        .alert {
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .progress-container {
+            height: 5px;
+            background: #e9ecef;
+            margin-top: 5px;
+            border-radius: 5px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .password-strength {
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-header">
+        <h1><i class="fas fa-lock me-2"></i>Secure Login</h1>
+        <p>Access your Spring Security account</p>
+    </div>
+
+    <div class="login-body">
+        <!-- Logout Message -->
+        <div th:if="${param.logout}" class="alert alert-success mb-4">
+            <i class="fas fa-check-circle me-2"></i> You have been successfully logged out.
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${param.error}" class="alert alert-danger mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i> Invalid username or password. Please try again.
+        </div>
+
+        <form th:action="@{/login}" method="post" id="loginForm">
+            <!-- CSRF Protection -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <!-- Username Field -->
+            <div class="mb-4 position-relative">
+                <label for="username" class="form-label fw-medium">Username</label>
+                <div class="position-relative">
+                    <i class="fas fa-user form-icon"></i>
+                    <input type="text" class="form-control" id="username" name="username"
+                           placeholder="Enter your username" required autofocus>
+                </div>
+                <div class="invalid-feedback" id="usernameFeedback">
+                    Please enter a valid username
+                </div>
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-4 position-relative">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="password" class="form-label fw-medium">Password</label>
+                    <a href="#" class="text-decoration-none text-primary small">Forgot Password?</a>
+                </div>
+                <div class="position-relative">
+                    <i class="fas fa-lock form-icon"></i>
+                    <input type="password" class="form-control" id="password" name="password"
+                           placeholder="Enter your password" required>
+                    <i class="fas fa-eye password-toggle" id="passwordToggle"></i>
+                </div>
+                <div class="progress-container" id="passwordStrengthContainer">
+                    <div class="progress-bar" id="passwordStrengthBar"></div>
+                </div>
+                <div class="password-strength" id="passwordStrengthText"></div>
+                <div class="invalid-feedback" id="passwordFeedback">
+                    Please enter your password
+                </div>
+            </div>
+
+            <!-- Remember Me -->
+            <div class="mb-4 form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe" name="remember-me">
+                <label class="form-check-label" for="rememberMe">Remember me</label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 btn-login" id="loginButton">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>or continue with</span>
+        </div>
+
+        <!-- Social Login -->
+        <div class="social-login row g-2 mb-4">
+            <div class="col-6">
+                <button class="btn btn-google w-100">
+                    <i class="fab fa-google me-2"></i>Google
+                </button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-facebook w-100">
+                    <i class="fab fa-facebook-f me-2"></i>Facebook
+                </button>
+            </div>
+        </div>
+
+        <!-- Registration Link -->
+        <div class="text-center">
+            <p class="mb-0">Don't have an account?
+                <a th:href="@{/register}" class="text-decoration-none fw-medium text-primary">Register</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="login-footer">
+        <p class="mb-0 small text-muted">
+            &copy; 2023 Spring Security Demo. All rights reserved.
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

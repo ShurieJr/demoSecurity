@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Spring Security Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            padding: 3rem 0;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            transition: transform 0.3s;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: white;
+            min-height: 100vh;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 0.8rem 1.5rem;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar d-none d-md-block" style="width: 250px;">
+        <div class="p-3">
+            <h4>Admin Dashboard</h4>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-people me-2"></i> User Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-shield-lock me-2"></i> Security
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-gear me-2"></i> Settings
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-bar-chart me-2"></i> Analytics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-file-earmark-text me-2"></i> Reports
+                </a>
+            </li>
+            <li class="nav-item mt-4">
+                <a class="nav-link" href="/home">
+                    <i class="bi bi-house me-2"></i> Back to Home
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">
+                    <i class="bi bi-box-arrow-right me-2"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+                <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <span class="navbar-brand me-auto">Admin Dashboard</span>
+                <span class="navbar-text me-3" sec:authentication="name"></span>
+                <a class="btn btn-outline-light" href="/logout">Logout</a>
+            </div>
+        </nav>
+
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <div class="container">
+                <h1>Administrator Dashboard</h1>
+                <p class="lead">Manage application users and security settings</p>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card bg-primary text-white">
+                        <div class="card-body text-center">
+                            <div class="stat-icon">👤</div>
+                            <h2>42</h2>
+                            <p class="card-text">Total Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card bg-success text-white">
+                        <div class="card-body text-center">
+                            <div class="stat-icon">✅</div>
+                            <h2>38</h2>
+                            <p class="card-text">Active Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card bg-warning text-dark">
+                        <div class="card-body text-center">
+                            <div class="stat-icon">👑</div>
+                            <h2>5</h2>
+                            <p class="card-text">Admin Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card bg-danger text-white">
+                        <div class="card-body text-center">
+                            <div class="stat-icon">⚠️</div>
+                            <h2>3</h2>
+                            <p class="card-text">Pending Actions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management -->
+        <div class="container">
+            <div class="card mb-5">
+                <div class="card-header bg-dark text-white">
+                    <h3>User Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <input type="text" class="form-control w-25" placeholder="Search users...">
+                        <button class="btn btn-primary">Add New User</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>admin@example.com</td>
+                                <td><span class="badge bg-danger">ADMIN</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>Just now</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>john.doe@example.com</td>
+                                <td><span class="badge bg-primary">USER</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>2 hours ago</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>jane.smith@example.com</td>
+                                <td><span class="badge bg-primary">USER</span></td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>Never</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <h5>Administrator Privileges</h5>
+                <p>As an administrator, you have full access to manage users, roles, and security settings.
+                    Use these privileges responsibly.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
